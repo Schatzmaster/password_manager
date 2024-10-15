@@ -1,8 +1,16 @@
 from tkinter import *
 from tkinter import messagebox
-
+from random import randint, choice, shuffle
+import pyperclip
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
+
+letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+           'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+           'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+symbols = ['!', '#', '$', '%', '&', '(', ')', '*', '+']
+
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 
@@ -61,7 +69,8 @@ def add_button_command():
     elif len(data_website) == 0:
         messagebox.showerror(title="Error", message="Empty Website!")
     else:
-        is_ok = messagebox.askokcancel(title=data_website, message=f"These are the details entered: \nE-Mail: {data_email}\nPassword: {data_password}\n Should this be saved?")
+        is_ok = messagebox.askokcancel(title=data_website,
+                                       message=f"These are the details entered: \nE-Mail: {data_email}\nPassword: {data_password}\n Should this be saved?")
         if is_ok:
             with open("data.txt", "a") as file:
                 file.write(f"{data_website} | {data_email} | {data_password}\n")
@@ -69,10 +78,19 @@ def add_button_command():
                 website_entry.delete(0, END)
 
 
+def generate_password():
+    password_entry.delete(0, END)
+    password_letters = [choice(letters) for char in range(randint(8, 10))]
+    password_symbols = [choice(symbols) for char in range(randint(2, 4))]
+    password_numbers = [choice(numbers) for char in range(randint(2, 4))]
+    password_list = password_numbers + password_letters + password_symbols
+    shuffle(password_list)
+    pw = "".join(password_list)
+    password_entry.insert(0, pw)
+    pyperclip.copy(pw)
 
 
-
-generate_button = Button(text="Generate Password")
+generate_button = Button(text="Generate Password", command=generate_password)
 generate_button.grid(column=2, row=3)
 
 add_button = Button(text="Add", width=36, command=add_button_command)
