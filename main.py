@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 from random import randint, choice, shuffle
 import pyperclip
+import json
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 
@@ -13,6 +14,43 @@ symbols = ['!', '#', '$', '%', '&', '(', ')', '*', '+']
 
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
+
+def add_button_command():
+    data_email = email_entry.get()
+    data_password = password_entry.get()
+    data_website = website_entry.get()
+    new_data = {
+        data_website: {
+            "email": data_email,
+            "password": data_password,
+        }
+    }
+
+    if len(data_password) == 0:
+        messagebox.showerror(title="Error", message="Empty Password!")
+    elif len(data_email) == 0:
+        messagebox.showerror(title="Error", message="Empty Email!")
+    elif len(data_website) == 0:
+        messagebox.showerror(title="Error", message="Empty Website!")
+    else:
+        try:
+            with open("data.json", "r") as file:
+                # Reading old data
+                data = json.load(file)
+        except FileNotFoundError:
+            with open("data.json", "w") as file:
+                json.dump(new_data, file, indent=4)
+        else:
+            # Update old data with new data
+            data.update(new_data)
+
+            with open("data.json", "w") as file:
+                # Saving updated data
+                json.dump(data, file, indent=4)
+        finally:
+            password_entry.delete(0, END)
+            website_entry.delete(0, END)
+
 
 # ---------------------------- UI SETUP ------------------------------- #
 
@@ -56,26 +94,6 @@ password_entry.grid(column=1, row=3)
 
 
 # Buttons
-
-def add_button_command():
-    data_email = (email_entry.get())
-    data_password = (password_entry.get())
-    data_website = (website_entry.get())
-
-    if len(data_password) == 0:
-        messagebox.showerror(title="Error", message="Empty Password!")
-    elif len(data_email) == 0:
-        messagebox.showerror(title="Error", message="Empty Email!")
-    elif len(data_website) == 0:
-        messagebox.showerror(title="Error", message="Empty Website!")
-    else:
-        is_ok = messagebox.askokcancel(title=data_website,
-                                       message=f"These are the details entered: \nE-Mail: {data_email}\nPassword: {data_password}\n Should this be saved?")
-        if is_ok:
-            with open("data.txt", "a") as file:
-                file.write(f"{data_website} | {data_email} | {data_password}\n")
-                password_entry.delete(0, END)
-                website_entry.delete(0, END)
 
 
 def generate_password():
