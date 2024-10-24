@@ -52,11 +52,40 @@ def add_button_command():
             website_entry.delete(0, END)
 
 
-# ---------------------------- UI SETUP ------------------------------- #
+# ---------------------------- FUNCTIONS ------------------------------- #
+
+def generate_password():
+    password_entry.delete(0, END)
+    password_letters = [choice(letters) for char in range(randint(8, 10))]
+    password_symbols = [choice(symbols) for char in range(randint(2, 4))]
+    password_numbers = [choice(numbers) for char in range(randint(2, 4))]
+    password_list = password_numbers + password_letters + password_symbols
+    shuffle(password_list)
+    pw = "".join(password_list)
+    password_entry.insert(0, pw)
+    pyperclip.copy(pw)
+
+
+def find_password():
+    user_input = website_entry.get()
+    try:
+        with open("data.json", "r") as file:
+            data = json.load(file)
+    except FileNotFoundError:(
+        messagebox.showerror(title="ERROR", message="No data found!"))
+    else:
+        if user_input in data:
+            messagebox.showinfo(title=f"Password for {user_input}", message=f"Email: {data[user_input]["email"]}\n"
+                                                                            f"Password: {data[user_input]["password"]}")
+        else:
+            messagebox.showerror(title="Not found", message="No details for the website exists!")
 
 
 def insert_mail():
     email_entry.insert(0, "jasp.hanson@gmail.com")
+
+
+# ---------------------------- UI SETUP ------------------------------- #
 
 
 # Window
@@ -83,7 +112,7 @@ password.grid(column=0, row=3)
 
 # Entry
 website_entry = Entry(width=35)
-website_entry.grid(column=1, row=1, columnspan=1)
+website_entry.grid(column=1, row=1)
 website_entry.focus()
 email_entry = Entry(width=35)
 email_entry.grid(column=1, row=2, columnspan=1)
@@ -92,26 +121,15 @@ insert_mail()
 password_entry = Entry(width=35)
 password_entry.grid(column=1, row=3)
 
-
 # Buttons
-
-
-def generate_password():
-    password_entry.delete(0, END)
-    password_letters = [choice(letters) for char in range(randint(8, 10))]
-    password_symbols = [choice(symbols) for char in range(randint(2, 4))]
-    password_numbers = [choice(numbers) for char in range(randint(2, 4))]
-    password_list = password_numbers + password_letters + password_symbols
-    shuffle(password_list)
-    pw = "".join(password_list)
-    password_entry.insert(0, pw)
-    pyperclip.copy(pw)
-
 
 generate_button = Button(text="Generate Password", command=generate_password)
 generate_button.grid(column=2, row=3)
 
 add_button = Button(text="Add", width=36, command=add_button_command)
 add_button.grid(column=1, row=4, columnspan=1)
+
+search_button = Button(text="Search", command=find_password, width=14)
+search_button.grid(column=2, row=1, columnspan=1)
 
 window.mainloop()
